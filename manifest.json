@@ -1,0 +1,14 @@
+{
+  "name": "Boscam Video Stitcher",
+  "description": "Stitch Videos from your Boscam TR1 camera",
+  "version": "0.1",
+  "manifest_version": 2,
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [{"fileSystem": ["write", "retainEntries", "directory"]}],
+  "icons": { "16": "boscam_stitcher-16.png", "128": "boscam_stitcher-128.png" }
+}
+
