@@ -1,0 +1,9 @@
+{
+  "name": "ch.042.boscam_stitcher",
+  "description": "Boscam Stitcher",
+  "path": "/home/mikeller/git/boscam_stitcher/npm_host/index.js",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://ackeimbgbkljjakgoniphigdfplmcjkp/"
+  ]
+}

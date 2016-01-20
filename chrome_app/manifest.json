@@ -8,7 +8,8 @@
       "scripts": ["background.js"]
     }
   },
-  "permissions": [{"fileSystem": ["write", "retainEntries", "directory"]}],
+  "permissions": [{"fileSystem": ["write", "retainEntries", "directory"]},
+    "nativeMessaging"],
   "icons": { "16": "boscam_stitcher-16.png", "128": "boscam_stitcher-128.png" }
 }
 

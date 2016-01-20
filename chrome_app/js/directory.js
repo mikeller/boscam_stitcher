@@ -109,6 +109,17 @@
   }
 
   function doProcess() {
+    var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
+
+      port.onMessage.addListener(function(msg) {
+        console.log("Received" + msg);
+      });
+
+      port.onDisconnect.addListener(function() {
+        console.log("Disconnected");
+      });
+
+      port.postMessage({ text: "hello world" });
   }
 
   document.getElementById('chooseInputDirectory').addEventListener('click', doChooseInputDirectory);
