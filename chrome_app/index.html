@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 100%">
   <head>
   </head>
-  <body>
+  <body style="height: 100%">
     <div>
       <span id="inputDirectory"></span>
       <button id="chooseInputDirectory">Choose Input Directory</button>
@@ -12,11 +12,10 @@
       <button id="chooseOutputDirectory">Choose Output Directory</button>
     </div>
     <div>
-      <button id="process_orig" disabled="true">Process</button>
-      <button id="process">Process</button>
-      <div id="fileList"></div>
+      <button id="process" disabled="true">Process</button>
     </div>
-    <div id="status"></div>
+    <div style="overflow:auto; max-height: 40%" id="fileList"></div>
+    <div style="overflow:auto; max-height: 30%" id="status"></div>
   </body>
   <script src="js/directory.js"></script>
 </html>

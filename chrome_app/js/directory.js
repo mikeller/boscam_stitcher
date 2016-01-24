@@ -9,6 +9,10 @@
 
   var inputList = [];
 
+  var jobInDirectory;
+  var jobList = [];
+  var jobOutDirectory;
+
   function updateStatus() {
     if (inputDirectoryEntry && outputDirectoryEntry) {
 	document.getElementById('process').disabled = false;
@@ -33,8 +37,10 @@
     if (directoryEntry) {
       inputDirectoryEntry = directoryEntry;
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
+        jobInDirectory = path;
+
         inputDirectory.innerText = path;
-        status.innerText = 'Set input path to ' + path;
+        status.innerText = status.innerText + 'Set input path to ' + path + '\n';
       });
 
       var directoryReader = directoryEntry.createReader();
@@ -42,7 +48,7 @@
         function (error) {
           inputDirectoryEntry = undefined;
 
-          status.innerText = 'Listing ' + dirPath + ' failed.';
+          status.innerText = status.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
         }
       );
 
@@ -62,7 +68,7 @@
         var fileIndex = parseInt(entry.name.substring(4, 8), 10);
 
         if(inputList[fileIndex] !== undefined) {
-          status.innerText = 'Error, file with index ' + fileIndex + ' exists multiple times.';
+          status.innerText = status.innerText + 'Error, file with index ' + fileIndex + ' exists multiple times.' + '\n';
           throw 'Duplicate index';
         }
 	if (fileIndex < minIndex) {
@@ -77,15 +83,30 @@
       }
     });
 
+    var jobIndex = 0;
+    var jobEntry;
     var fragment = document.createDocumentFragment();
-    var lastSequenceIndex = inputList[minIndex].sequenceIndex - 3;
+    var lastSequenceIndex = -4;
     for (i = minIndex; i <= maxIndex; i++) {
       if (inputList[i] !== undefined) {
         if (inputList[i].sequenceIndex !== lastSequenceIndex + 3) {
+          if (jobEntry !== undefined) {
+            jobList.push(jobEntry);
+          }
+          jobEntry = {
+            index: jobIndex,
+            inputFiles: []
+          };
+
           var li = document.createElement('li');
-          li.innerText = '-';
+          li.innerText = '- (' + jobIndex + ')';
           fragment.appendChild(li);
+
+          jobIndex = jobIndex + 1;
         }
+        
+        jobEntry.inputFiles.push(jobInDirectory + '/' + inputList[i].fileEntry.name);
+
         var li = document.createElement('li');
         li.innerHTML = ['<span>', inputList[i].fileEntry.name, '</span>'].join('');
 
@@ -94,6 +115,10 @@
         fragment.appendChild(li);
       }
     }
+    if (jobEntry !== undefined) {
+      jobList.push(jobEntry);
+    }
+
     fileList.appendChild(fragment);
   }
     
@@ -101,25 +126,31 @@
     if (directoryEntry) {
       outputDirectoryEntry = directoryEntry;
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
+        jobOutDirectory = path;
         outputDirectory.innerText = path;
-        status.innerText = 'Set output path to ' + path;
+        status.innerText = status.innerText + 'Set output path to ' + path + '\n';
       });
       updateStatus();
     }
   }
 
   function doProcess() {
-    var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
+    jobList.forEach(function(job) {
+      var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
 
-      port.onMessage.addListener(function(msg) {
-        console.log("Received" + msg);
-      });
+        port.onMessage.addListener(function(msg) {
+          status.innerText = status.innerText + msg + '\n';
+        });
 
-      port.onDisconnect.addListener(function() {
-        console.log("Disconnected");
-      });
+        port.onDisconnect.addListener(function() {
+          status.innerText = status.innerText + 'Disconnected.\n';
+        });
 
-      port.postMessage({ text: "hello world" });
+        port.postMessage({
+          inputs: job.inputFiles,
+          output: jobOutDirectory + '/' + job.index + '.avi'
+        });
+    });
   }
 
   document.getElementById('chooseInputDirectory').addEventListener('click', doChooseInputDirectory);
