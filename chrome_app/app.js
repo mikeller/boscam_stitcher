@@ -1,25 +1,14 @@
 (function() {
-  var inputDirectory = document.getElementById('inputDirectory');
-  var outputDirectory = document.getElementById('outputDirectory');
-  var fileList = document.getElementById('fileList');
-  var status = document.getElementById('status');
-  var progressBar = document.getElementById('progressBar');
-
-  var inputDirectoryEntry;
-  var outputDirectoryEntry;
-
-  var inputList = [];
-
   var jobIndex;
-  var jobInDirectory;
+  var jobInputDirectory;
   var jobList = [];
-  var jobOutDirectory;
+  var jobOutputDirectory;
 
   function updateStatus() {
-    if (inputDirectoryEntry && outputDirectoryEntry) {
-	document.getElementById('process').disabled = false;
+    if (jobList.length > 0 && jobOutputDirectory !== undefined) {
+	processButton.disabled = false;
     } else {
-	document.getElementById('process').disabled = true;
+	processButton.disabled = true;
     }
   }
 
@@ -41,13 +30,12 @@
 
   function processInputDirectory(directoryEntry) {
     if (directoryEntry) {
-      inputDirectoryEntry = directoryEntry;
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
-        jobInDirectory = path;
+        jobInputDirectory = path;
 
         inputDirectory.innerText = path;
 
-        status.innerText = status.innerText + 'Set input path to ' + path + '\n';
+        statusList.innerText = statusList.innerText + 'Set input path to ' + path + '\n';
 
         readDirectory(directoryEntry);
       });
@@ -58,17 +46,15 @@
     var directoryReader = directoryEntry.createReader();
     directoryReader.readEntries(processInputFiles,
       function (error) {
-        inputDirectoryEntry = undefined;
-
-        status.innerText = status.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
+        statusList.innerText = statusList.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
       }
     );
 
     updateStatus();
   }
 
-  function processInputFiles (entries) {
-    inputList.length = 0;
+  function processInputFiles(entries) {
+    var inputList = [];
     fileList.innerText = '';
     var minIndex = 10000;
     var maxIndex = -1;
@@ -79,7 +65,7 @@
         var fileIndex = parseInt(entry.name.substring(4, 8), 10);
 
         if(inputList[fileIndex] !== undefined) {
-          status.innerText = status.innerText + 'Error, file with index ' + fileIndex + ' exists multiple times.' + '\n';
+          statusList.innerText = statusList.innerText + 'Error, file with index ' + fileIndex + ' exists multiple times.' + '\n';
           throw 'Duplicate index';
         }
 	if (fileIndex < minIndex) {
@@ -116,7 +102,7 @@
           jobIndex = jobIndex + 1;
         }
         
-        jobEntry.inputFiles.push(jobInDirectory + '/' + inputList[i].fileEntry.name);
+        jobEntry.inputFiles.push(jobInputDirectory + '/' + inputList[i].fileEntry.name);
 
         var li = document.createElement('li');
         li.innerHTML = ['<span>', inputList[i].fileEntry.name, '</span>'].join('');
@@ -135,61 +121,67 @@
     
   function processOutputDirectory(directoryEntry) {
     if (directoryEntry) {
-      outputDirectoryEntry = directoryEntry;
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
-        jobOutDirectory = path;
-        outputDirectory.innerText = path;
-        status.innerText = status.innerText + 'Set output path to ' + path + '\n';
-      });
+        jobOutputDirectory = path;
 
-      updateStatus();
+        outputDirectory.innerText = path;
+        statusList.innerText = statusList.innerText + 'Set output path to ' + path + '\n';
+
+        updateStatus();
+      });
     }
   }
 
   function doProcess() {
-    document.getElementById('chooseInputDirectory').disabled = true;
-    document.getElementById('chooseOutputDirectory').disabled = true;
-    document.getElementById('process').disabled = true;
+    if (jobList.length > 0) {
+      inputDirectoryButton.disabled = true;
+      outputDirectoryButton.disabled = true;
+      processButton.disabled = true;
     
-    processJob(0);
+      processJob();
+    }
   }
 
-  function processJob(index) {
+  function processJob() {
     var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
 
-      port.onMessage.addListener(function(msg) {
-        if (msg.text !== undefined) {
-          status.innerText = status.innerText + msg.text + '\n';
-        }
+    port.onMessage.addListener(function(msg) {
+      if (msg.text !== undefined) {
+        statusList.innerText = statusList.innerText + msg.text + '\n';
+      }
 
-        if (msg.progress !== undefined) {
-           updateProgressBar(index, msg.progress.percent);
-        }
-	
-        if (msg.processingDone) {
-          if (jobList[index + 1] !== undefined) {
-            processJob(index + 1);
-          } else {
-            document.getElementById('chooseInputDirectory').disabled = false;
-            document.getElementById('chooseOutputDirectory').disabled = false;
-          }
-        }
-      });
+      if (msg.progress !== undefined) {
+         updateProgressBar(jobIndex - jobList.length, msg.progress.percent);
+      }
 
-      port.onDisconnect.addListener(function() {
-        status.innerText = status.innerText + 'Disconnected.\n';
-      });
+      if (msg.processingDone) {
+        if (jobList.length > 0) {
+          processJob();
+        } else {
+          inputDirectoryButton.disabled = false;
+          outputDirectoryButton.disabled = false;
+        }
+      }
+    });
 
-      var job = jobList[index];
-      port.postMessage({
-        inputs: job.inputFiles,
-        output: jobOutDirectory + '/' + job.index + '.avi',
-        outputOptions: ['-c:v libx264', '-preset slower', '-crf 23', '-an']
-      });
+    port.onDisconnect.addListener(function() {
+      statusList.innerText = statusList.innerText + 'Disconnected.\n';
+    });
+
+    var job = jobList.splice(0, 1)[0];
+    port.postMessage({
+      inputs: job.inputFiles,
+      output: jobOutputDirectory + '/' + job.index + '.avi',
+      outputOptions: ['-c:v libx264', '-preset slower', '-crf 23', '-an']
+    });
   }
 
-  document.getElementById('chooseInputDirectory').addEventListener('click', doChooseInputDirectory);
-  document.getElementById('chooseOutputDirectory').addEventListener('click', doChooseOutputDirectory);
-  document.getElementById('process').addEventListener('click', doProcess);
+  function doClear() {
+  }
+
+  inputDirectoryButton.addEventListener('click', doChooseInputDirectory);
+  outputDirectoryButton.addEventListener('click', doChooseOutputDirectory);
+  processButton.addEventListener('click', doProcess);
+  clearButton.addEventListener('click', doClear);
 })();
 

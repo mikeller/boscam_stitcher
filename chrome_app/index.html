@@ -5,18 +5,22 @@
   <body style="height: 100%">
     <div>
       <span id="inputDirectory"></span>
-      <button id="chooseInputDirectory">Choose Input Directory</button>
+      <button id="inputDirectoryButton">Choose Input Directory</button>
     </div>
     <div>
       <span id="outputDirectory"></span>
-      <button id="chooseOutputDirectory">Choose Output Directory</button>
+      <button id="outputDirectoryButton">Choose Output Directory</button>
     </div>
     <div>
-      <button id="process" disabled="true">Process</button>
+      <button id="processButton" disabled="true">Process</button>
+      <button id="clearButton" disabled="true">Clear</button>
     </div>
     <div id="progressBar">ready</div>
     <div style="overflow:auto; max-height: 40%" id="fileList"></div>
-    <div style="overflow:auto; max-height: 30%" id="status"></div>
+    <div style="overflow:auto; max-height: 30%" id="statusList"></div>
   </body>
-  <script src="js/directory.js"></script>
+<!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.1/moment.min.js"></script>
+-->
+  <script src="app.js"></script>
 </html>
