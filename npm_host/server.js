@@ -12,13 +12,23 @@ process.stdin
 
     ffmpegCommand.output(msg.output)
     .on('start', function(commandLine) {
-      push('Spawned Ffmpeg with command: ' + commandLine);
+      push({
+        text: 'Spawned Ffmpeg with command: ' + commandLine,
+        processingDone: false
+      });
     })
     .on('error', function(err) {
-      push('An error occurred: ' + err.message);
+      push({
+        text: 'An error occurred: ' + err.message,
+        processingDone: true
+      });
+      done();
     })
     .on('end', function() {
-      push('Processing finished !');
+      push({
+        text: 'Processing finished !',
+        processingDone: true
+      });
       done();
     })
     .run();

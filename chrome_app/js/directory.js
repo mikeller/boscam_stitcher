@@ -40,20 +40,25 @@
         jobInDirectory = path;
 
         inputDirectory.innerText = path;
+
         status.innerText = status.innerText + 'Set input path to ' + path + '\n';
+
+        readDirectory(directoryEntry);
       });
-
-      var directoryReader = directoryEntry.createReader();
-      directoryReader.readEntries(processInputFiles,
-        function (error) {
-          inputDirectoryEntry = undefined;
-
-          status.innerText = status.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
-        }
-      );
-
-      updateStatus();
     }
+  }
+
+  function readDirectory(directoryEntry) {
+    var directoryReader = directoryEntry.createReader();
+    directoryReader.readEntries(processInputFiles,
+      function (error) {
+        inputDirectoryEntry = undefined;
+
+        status.innerText = status.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
+      }
+    );
+
+    updateStatus();
   }
 
   function processInputFiles (entries) {
@@ -116,7 +121,7 @@
       }
     }
     if (jobEntry !== undefined) {
-      jobList.push(jobEntry);
+      jobList[jobEntry.index] = jobEntry;
     }
 
     fileList.appendChild(fragment);
@@ -130,27 +135,44 @@
         outputDirectory.innerText = path;
         status.innerText = status.innerText + 'Set output path to ' + path + '\n';
       });
+
       updateStatus();
     }
   }
 
   function doProcess() {
-    jobList.forEach(function(job) {
-      var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
+    document.getElementById('chooseInputDirectory').disabled = true;
+    document.getElementById('chooseOutputDirectory').disabled = true;
+    document.getElementById('process').disabled = true;
+    
+    processJob(0);
+  }
 
-        port.onMessage.addListener(function(msg) {
-          status.innerText = status.innerText + msg + '\n';
-        });
+  function processJob(index) {
+    var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
 
-        port.onDisconnect.addListener(function() {
-          status.innerText = status.innerText + 'Disconnected.\n';
-        });
+      port.onMessage.addListener(function(msg) {
+        status.innerText = status.innerText + msg.text + '\n';
+	
+        if (msg.processingDone) {
+          if (jobList[index + 1] !== undefined) {
+            processJob(index + 1);
+          } else {
+            document.getElementById('chooseInputDirectory').disabled = false;
+            document.getElementById('chooseOutputDirectory').disabled = false;
+          }
+        }
+      });
 
-        port.postMessage({
-          inputs: job.inputFiles,
-          output: jobOutDirectory + '/' + job.index + '.avi'
-        });
-    });
+      port.onDisconnect.addListener(function() {
+        status.innerText = status.innerText + 'Disconnected.\n';
+      });
+
+      var job = jobList[index];
+      port.postMessage({
+        inputs: job.inputFiles,
+        output: jobOutDirectory + '/' + job.index + '.avi'
+      });
   }
 
   document.getElementById('chooseInputDirectory').addEventListener('click', doChooseInputDirectory);
