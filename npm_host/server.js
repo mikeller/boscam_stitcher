@@ -10,10 +10,18 @@ process.stdin
       ffmpegCommand.mergeAdd(filename);
     });
 
-    ffmpegCommand.output(msg.output)
+    ffmpegCommand
+    .output(msg.output)
+    .outputOptions(msg.outputOptions)
     .on('start', function(commandLine) {
       push({
-        text: 'Spawned Ffmpeg with command: ' + commandLine,
+        text: 'Spawned ffmpeg with command: ' + commandLine,
+        processingDone: false
+      });
+    })
+    .on('progress', function(progress) {
+      push({
+        progress: progress,
         processingDone: false
       });
     })

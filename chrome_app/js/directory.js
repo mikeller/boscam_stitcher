@@ -3,12 +3,14 @@
   var outputDirectory = document.getElementById('outputDirectory');
   var fileList = document.getElementById('fileList');
   var status = document.getElementById('status');
+  var progressBar = document.getElementById('progressBar');
 
   var inputDirectoryEntry;
   var outputDirectoryEntry;
 
   var inputList = [];
 
+  var jobIndex;
   var jobInDirectory;
   var jobList = [];
   var jobOutDirectory;
@@ -19,6 +21,10 @@
     } else {
 	document.getElementById('process').disabled = true;
     }
+  }
+
+  function updateProgressBar(index, percent) {
+    progressBar.innerText = percent + ' percent done of file ' + index + ' of ' + jobIndex + ' files...';
   }
 
   function doChooseInputDirectory() {
@@ -88,7 +94,7 @@
       }
     });
 
-    var jobIndex = 0;
+    jobIndex = 0;
     var jobEntry;
     var fragment = document.createDocumentFragment();
     var lastSequenceIndex = -4;
@@ -152,7 +158,13 @@
     var port = chrome.runtime.connectNative('ch.042.boscam_stitcher');
 
       port.onMessage.addListener(function(msg) {
-        status.innerText = status.innerText + msg.text + '\n';
+        if (msg.text !== undefined) {
+          status.innerText = status.innerText + msg.text + '\n';
+        }
+
+        if (msg.progress !== undefined) {
+           updateProgressBar(index, msg.progress.percent);
+        }
 	
         if (msg.processingDone) {
           if (jobList[index + 1] !== undefined) {
@@ -171,7 +183,8 @@
       var job = jobList[index];
       port.postMessage({
         inputs: job.inputFiles,
-        output: jobOutDirectory + '/' + job.index + '.avi'
+        output: jobOutDirectory + '/' + job.index + '.avi',
+        outputOptions: ['-c:v libx264', '-preset slower', '-crf 23', '-an']
       });
   }
 
