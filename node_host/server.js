@@ -1,3 +1,5 @@
+#!/usr/bin/nodejs
+
 var nativeMessage = require('chrome-native-messaging');
 var FfmpegCommand = require('fluent-ffmpeg');
 
