@@ -3,6 +3,8 @@
   var jobInputDirectory;
   var jobList = [];
   var jobOutputDirectory;
+  var jobStartIndex;
+  var dateString = moment().format("YYYYMMDD");
 
   function updateStatus() {
     if (jobList.length > 0 && jobOutputDirectory !== undefined) {
@@ -37,12 +39,12 @@
 
         statusList.innerText = statusList.innerText + 'Set input path to ' + path + '\n';
 
-        readDirectory(directoryEntry);
+        readInputDirectory(directoryEntry);
       });
     }
   }
 
-  function readDirectory(directoryEntry) {
+  function readInputDirectory(directoryEntry) {
     var directoryReader = directoryEntry.createReader();
     directoryReader.readEntries(processInputFiles,
       function (error) {
@@ -127,9 +129,36 @@
         outputDirectory.innerText = path;
         statusList.innerText = statusList.innerText + 'Set output path to ' + path + '\n';
 
-        updateStatus();
+        processOutputDirectory(directoryEntry);
       });
     }
+  }
+
+  function readOutputDirectory(directoryEntry) {
+    var directoryReader = directoryEntry.createReader();
+    directoryReader.readEntries(processOutputFiles,
+      function (error) {
+        statusList.innerText = statusList.innerText + 'Listing ' + dirPath + ' failed.' + '\n';
+      }
+    );
+
+    updateStatus();
+  }
+
+  function getFileNamePrefix() {
+    return dateString + '_';
+  }
+
+  function processOutputFiles(entries) {
+    jobStartIndex = 0;
+    entries.forEach(function(entry) {
+      if (entry.isFile && entry.name.indexOf(getFileNamePrefix()) === 0) {
+        var fileIndex = parseInt(entry.name.substring(getFileNamePrefix().length), 10);
+        if (fileIndex >= jobStartIndex) {
+          jobStartIndex = fileIndex + 1;
+        }
+      }
+    });
   }
 
   function doProcess() {
@@ -171,8 +200,8 @@
     var job = jobList.splice(0, 1)[0];
     port.postMessage({
       inputs: job.inputFiles,
-      output: jobOutputDirectory + '/' + job.index + '.avi',
-      outputOptions: ['-c:v libx264', '-preset slower', '-crf 23', '-an']
+      output: jobOutputDirectory + '/' + dateString + '_' + job.index + '.avi',
+      outputOptions: ['-c:v libx264', '-preset slower', '-crf 17', '-an']
     });
   }
 
@@ -183,5 +212,7 @@
   outputDirectoryButton.addEventListener('click', doChooseOutputDirectory);
   processButton.addEventListener('click', doProcess);
   clearButton.addEventListener('click', doClear);
+
+  dateField.innerText = dateString;
 })();
 
