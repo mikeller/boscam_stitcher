@@ -11,7 +11,7 @@ cd $SCRIPT_PATH
 
 npm install
 
-chmod ug+x $SCRIPT_PATH/$SERVER_SCRIPT
+chmod ug+x $SCRIPT_PATH/$HOST_SCRIPT
 
 mkdir -p $INSTALL_PATH
 cp ./$HOST_CONFIG $INSTALL_PATH/$HOST_CONFIG
