@@ -4,6 +4,6 @@
   "path": "<script_path>/server.js",
   "type": "stdio",
   "allowed_origins": [
-    "chrome-extension://ackeimbgbkljjakgoniphigdfplmcjkp/"
+    "chrome-extension://kgiknmlpajgniecalpnjdgfcmdhnbnih/"
   ]
 }
