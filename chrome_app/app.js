@@ -129,7 +129,7 @@
         outputDirectory.innerText = path;
         statusList.innerText = statusList.innerText + 'Set output path to ' + path + '\n';
 
-        processOutputDirectory(directoryEntry);
+        readOutputDirectory(directoryEntry);
       });
     }
   }
@@ -145,20 +145,32 @@
     updateStatus();
   }
 
-  function getFileNamePrefix() {
+  function getOutputPrefix() {
     return dateString + '_';
+  }
+
+  function getOutputSuffix() {
+    return '.avi';
+  }
+
+  function getPaddedNumber(number) {
+    return ('000' + number).substr(-3);
   }
 
   function processOutputFiles(entries) {
     jobStartIndex = 0;
     entries.forEach(function(entry) {
-      if (entry.isFile && entry.name.indexOf(getFileNamePrefix()) === 0) {
-        var fileIndex = parseInt(entry.name.substring(getFileNamePrefix().length), 10);
+      if (entry.isFile
+        && entry.name.substr(0, getOutputPrefix().length) === getOutputPrefix()
+        && entry.name.substr(-getOutputSuffix().length) === getOutputSuffix()) {
+        var fileIndex = parseInt(entry.name.substring(getOutputPrefix().length, entry.name.length - getOutputSuffix().length), 10);
         if (fileIndex >= jobStartIndex) {
           jobStartIndex = fileIndex + 1;
         }
       }
     });
+
+    statusList.innerText = statusList.innerText + 'Set starting output file index to ' + jobStartIndex + '\n';
   }
 
   function doProcess() {
@@ -200,7 +212,7 @@
     var job = jobList.splice(0, 1)[0];
     port.postMessage({
       inputs: job.inputFiles,
-      output: jobOutputDirectory + '/' + dateString + '_' + job.index + '.avi',
+      output: jobOutputDirectory + '/' + getOutputPrefix() + getPaddedNumber(jobStartIndex + job.index) + getOutputSuffix(),
       outputOptions: ['-c:v libx264', '-preset slower', '-crf 17', '-an']
     });
   }
