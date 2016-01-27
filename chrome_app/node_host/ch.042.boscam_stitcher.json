@@ -1,9 +1,0 @@
-{
-  "name": "ch.042.boscam_stitcher",
-  "description": "Boscam Stitcher",
-  "path": "<script_path>/server.js",
-  "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://heijiodgmgibgfnbnolojncclbahbfmc/"
-  ]
-}
