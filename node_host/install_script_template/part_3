@@ -1,3 +1,0 @@
-EOF
-
-sed -i -E "s#^(\s*\"path\"\s*:\s*\").*(\"\s*,\s*)\$#\1${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}#" ${MANIFEST_PATH}/${MANIFEST_NAME}
