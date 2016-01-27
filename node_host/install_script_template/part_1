@@ -1,0 +1,6 @@
+EOF
+
+chmod ug+x ${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}
+
+
+cat << EOF > ${HOST_SCRIPT_PATH}/package.json

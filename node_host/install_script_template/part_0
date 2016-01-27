@@ -1,0 +1,14 @@
+#!/bin/sh
+
+HOST_SCRIPT_NAME=server.js
+HOST_SCRIPT_PATH=/opt/boscam_stitcher
+
+MANIFEST_NAME=ch.042.boscam_stitcher.json
+MANIFEST_PATH=~/.config/chromium/NativeMessagingHosts
+
+VERSION=0.1.3
+
+
+mkdir ${HOST_SCRIPT_PATH}
+
+cat << EOF > ${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}

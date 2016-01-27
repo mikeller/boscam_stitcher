@@ -1,0 +1,10 @@
+EOF
+
+cd ${HOST_SCRIPT_PATH}
+
+npm install
+
+
+mkdir -p ${MANIFEST_PATH}
+
+cat << EOF > ${MANIFEST_PATH}/${MANIFEST_NAME}
