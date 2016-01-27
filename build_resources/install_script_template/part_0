@@ -1,12 +1,14 @@
 #!/bin/sh
 
 HOST_SCRIPT_NAME=server.js
-HOST_SCRIPT_PATH=/opt/boscam_stitcher
+HOST_SCRIPT_PATH=~/.boscam_stitcher_host
 
 MANIFEST_NAME=ch.042.boscam_stitcher.json
 MANIFEST_PATH=~/.config/chromium/NativeMessagingHosts
 
 
-mkdir ${HOST_SCRIPT_PATH}
+if [ ! -d ${HOST_SCRIPT_PATH} ]; then
+  mkdir ${HOST_SCRIPT_PATH}
+fi
 
 cat << EOF > ${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}
