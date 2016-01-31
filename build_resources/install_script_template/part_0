@@ -6,6 +6,7 @@ HOST_SCRIPT_PATH=~/.boscam_stitcher_host
 MANIFEST_NAME=ch.042.boscam_stitcher.json
 MANIFEST_PATH=~/.config/chromium/NativeMessagingHosts
 
+TMP_DIR=/tmp
 
 if [ ! -d ${HOST_SCRIPT_PATH} ]; then
   mkdir ${HOST_SCRIPT_PATH}

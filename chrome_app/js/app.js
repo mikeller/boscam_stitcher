@@ -223,7 +223,7 @@
   inputDirectoryButton.addEventListener('click', doChooseInputDirectory);
   outputDirectoryButton.addEventListener('click', doChooseOutputDirectory);
   processButton.addEventListener('click', doProcess);
-  clearButton.addEventListener('click', doClear);
+//  clearButton.addEventListener('click', doClear);
 
   dateField.innerText = dateString;
 })();

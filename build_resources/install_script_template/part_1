@@ -1,5 +1,7 @@
 EOF
 
+sed -i -E "s#^(\s*var\s*tmpDir\s*=\s*').*('\s*;\s*)\$#\1${TMP_DIR}\2#" ${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}
+
 chmod ug+x ${HOST_SCRIPT_PATH}/${HOST_SCRIPT_NAME}
 
 

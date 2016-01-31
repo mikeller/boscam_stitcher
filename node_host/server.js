@@ -4,6 +4,7 @@ var nativeMessage = require('chrome-native-messaging');
 var FfmpegCommand = require('fluent-ffmpeg');
 var pjson = require('./package.json');
 
+var tmpDir = '/tmp';
 var version = pjson.version;
 
 process.stdin
@@ -12,11 +13,10 @@ process.stdin
     var ffmpegCommand = new FfmpegCommand();
 
     msg.inputs.forEach(function(filename) {
-      ffmpegCommand.mergeAdd(filename);
+      ffmpegCommand.input(filename);
     });
 
     ffmpegCommand
-    .output(msg.output)
     .outputOptions(msg.outputOptions)
     .on('start', function(commandLine) {
       push({
@@ -44,7 +44,7 @@ process.stdin
       });
       done();
     })
-    .run();
+    .mergeToFile(msg.output, tmpDir);
   }))
   .pipe(new nativeMessage.Output())
   .pipe(process.stdout);
