@@ -213,7 +213,7 @@
     port.postMessage({
       inputs: job.inputFiles,
       output: jobOutputDirectory + '/' + getOutputPrefix() + getPaddedNumber(jobStartIndex + job.index) + getOutputSuffix(),
-      outputOptions: ['-c:v libx264', '-preset slower', '-crf 17', '-an']
+      outputOptions: ['-c:v libx264', '-preset slower', '-crf 22', '-an']
     });
   }
 
