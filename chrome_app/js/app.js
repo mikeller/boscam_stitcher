@@ -198,7 +198,7 @@
 
       if (msg.processingDone) {
         if (!msg.error) {
-          progressBarField.innerText = 'Completed processing file ' + jobIndex - jobList.length + ' of ' + jobIndex + '.';
+          progressBarField.innerText = 'Completed processing file ' + (jobIndex - jobList.length) + ' of ' + jobIndex + '.';
         } else {
           progressBarField.innerText = 'An error occurred: ' + msg.text;
         }
