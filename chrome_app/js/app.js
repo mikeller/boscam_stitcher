@@ -15,7 +15,7 @@
   }
 
   function updateProgressBar(index, percent) {
-    progressBarField.innerText = percent + ' percent done of file ' + index + ' of ' + jobIndex + ' files...';
+    progressBarField.innerText = percent + ' percent done of file ' + index + ' of ' + jobIndex + '...';
   }
 
   function doChooseInputDirectory() {
@@ -198,9 +198,9 @@
 
       if (msg.processingDone) {
         if (!msg.error) {
-          progressBarField.innerText = 'An error occurred: ' + msg.text;
-        } else {
           progressBarField.innerText = 'Completed processing file ' + jobIndex - jobList.length + ' of ' + jobIndex + '.';
+        } else {
+          progressBarField.innerText = 'An error occurred: ' + msg.text;
         }
 
         if (jobList.length > 0) {
