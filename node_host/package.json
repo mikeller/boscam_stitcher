@@ -1,6 +1,6 @@
 {
   "name": "boscam_stitcher",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "private": true,
   "description": "Node host to do the heavy lifting required to stitch (and compress) video files created by a Boscam TR1 camera",
   "main": "index.js",
