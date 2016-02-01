@@ -15,7 +15,7 @@
   }
 
   function updateProgressBar(index, percent) {
-    progressBar.innerText = percent + ' percent done of file ' + index + ' of ' + jobIndex + ' files...';
+    progressBarField.innerText = percent + ' percent done of file ' + index + ' of ' + jobIndex + ' files...';
   }
 
   function doChooseInputDirectory() {
@@ -35,7 +35,7 @@
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
         jobInputDirectory = path;
 
-        inputDirectory.innerText = path;
+        inputDirectoryField.innerText = path;
 
         statusList.innerText = statusList.innerText + 'Set input path to ' + path + '\n';
 
@@ -126,7 +126,7 @@
       chrome.fileSystem.getDisplayPath(directoryEntry, function(path) {
         jobOutputDirectory = path;
 
-        outputDirectory.innerText = path;
+        outputDirectoryField.innerText = path;
         statusList.innerText = statusList.innerText + 'Set output path to ' + path + '\n';
 
         readOutputDirectory(directoryEntry);
@@ -170,6 +170,7 @@
       }
     });
 
+    startIndexField.innerText = jobStartIndex;
     statusList.innerText = statusList.innerText + 'Set starting output file index to ' + jobStartIndex + '\n';
   }
 
@@ -196,6 +197,12 @@
       }
 
       if (msg.processingDone) {
+        if (!msg.error) {
+          progressBarField.innerText = 'An error occurred: ' + msg.text;
+        } else {
+          progressBarField.innerText = 'Completed processing file ' + jobIndex - jobList.length + ' of ' + jobIndex + '.';
+        }
+
         if (jobList.length > 0) {
           processJob();
         } else {
@@ -206,6 +213,7 @@
     });
 
     port.onDisconnect.addListener(function() {
+      progressBarField.innerText = 'The server disconnected.';
       statusList.innerText = statusList.innerText + 'Disconnected.\n';
     });
 

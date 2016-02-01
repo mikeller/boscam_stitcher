@@ -4,25 +4,28 @@
   </head>
   <body style="height: 100%">
     <div>
+      Input directory: <span id="inputDirectoryField"></span>
+    </div>
+    <div>
+      Output directory: <span id="outputDirectoryField"></span>
+    </div>
+    <div>
       Date: <span id="dateField"></span>
     </div>
     <div>
-      <span id="inputDirectory"></span>
-      <button id="inputDirectoryButton">Choose Input Directory</button>
+      Starting index: <span id="startIndexField"></span>
     </div>
+    <div style="overflow:auto; max-height: 40%" id="fileList"></div>
+    <div style="overflow:auto; max-height: 30%" id="statusList"></div>
     <div>
-      <span id="outputDirectory"></span>
-      <button id="outputDirectoryButton">Choose Output Directory</button>
-    </div>
-    <div>
+      <button id="inputDirectoryButton">Input Directory</button>
+      <button id="outputDirectoryButton">Output Directory</button>
       <button id="processButton" disabled="true">Process</button>
 <!--
       <button id="clearButton" disabled="true">Clear</button>
 -->
     </div>
-    <div id="progressBar">ready</div>
-    <div style="overflow:auto; max-height: 40%" id="fileList"></div>
-    <div style="overflow:auto; max-height: 30%" id="statusList"></div>
+    <div id="progressBarField">Ready</div>
   </body>
   <script src="lib/moment.js"></script>
   <script src="js/app.js"></script>

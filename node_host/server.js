@@ -21,18 +21,21 @@ process.stdin
     .on('start', function(commandLine) {
       push({
         text: 'Spawned ffmpeg with command: ' + commandLine,
+        error: false,
         processingDone: false
       });
     })
     .on('progress', function(progress) {
       push({
         progress: progress,
+        error: false,
         processingDone: false
       });
     })
     .on('error', function(err) {
       push({
         text: 'An error occurred: ' + err.message,
+        error: true,
         processingDone: true
       });
       done();
@@ -40,6 +43,7 @@ process.stdin
     .on('end', function() {
       push({
         text: 'Processing finished !',
+        error: false,
         processingDone: true
       });
       done();
