@@ -8,6 +8,8 @@ MANIFEST_PATH=~/.config/chromium/NativeMessagingHosts
 
 TMP_DIR=/tmp
 
+CURRENT_DIR=$(pwd)
+
 if [ ! -d ${HOST_SCRIPT_PATH} ]; then
   mkdir ${HOST_SCRIPT_PATH}
 fi
