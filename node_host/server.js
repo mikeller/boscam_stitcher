@@ -18,6 +18,7 @@ process.stdin
 
     ffmpegCommand
     .outputOptions(msg.outputOptions)
+    .renice(19)
     .on('start', function(commandLine) {
       push({
         text: 'Spawned ffmpeg with command: ' + commandLine,
