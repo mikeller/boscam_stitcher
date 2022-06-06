@@ -5,6 +5,10 @@
   var jobOutputDirectory;
   var jobStartIndex;
   var dateString = moment().format("YYYYMMDD");
+  var config = {
+      outputOptions: ['-c:v libx264', '-preset slower', '-crf 22', '-an']
+  };
+
 
   function updateStatus() {
     if (jobList.length > 0 && jobOutputDirectory !== undefined) {
@@ -221,7 +225,7 @@
     port.postMessage({
       inputs: job.inputFiles,
       output: jobOutputDirectory + '/' + getOutputPrefix() + getPaddedNumber(jobStartIndex + job.index) + getOutputSuffix(),
-      outputOptions: ['-c:v libx264', '-preset slower', '-crf 22', '-an']
+      outputOptions: config.outputOptions
     });
   }
 
